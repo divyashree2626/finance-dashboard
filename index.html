@@ -1,0 +1,626 @@
+
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Finance App – Dashboard</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com"/>
+  <link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;600;700;800&family=DM+Sans:wght@300;400;500;600&display=swap" rel="stylesheet"/>
+  <script src="https://code.iconify.design/iconify-icon/1.0.7/iconify-icon.min.js"></script>
+  <style>
+    /* ── CSS VARIABLES ───────────────────────────────────────────── */
+    :root {
+      --green: #22c55e;
+      --green-dark: #16a34a;
+      --transition: 700ms cubic-bezier(0.34,1.56,0.64,1);
+      --fast: 300ms ease;
+    }
+
+    [data-theme="light"] {
+      --bg:        #f5f5f0;
+      --bg2:       #ffffff;
+      --sidebar:   #0d0d0d;
+      --card:      #0d0d0d;
+      --surface:   #ececec;
+      --text:      #0d0d0d;
+      --subtext:   #666;
+      --border:    #e2e2e2;
+      --bar:       #d4d4d4;
+      --header-bg: #f5f5f0;
+      --shadow:    0 4px 24px rgba(0,0,0,0.07);
+    }
+
+    [data-theme="dark"] {
+      --bg:        #0a0a0a;
+      --bg2:       #141414;
+      --sidebar:   #0d0d0d;
+      --card:      #1a1a1a;
+      --surface:   #1e1e1e;
+      --text:      #f0f0f0;
+      --subtext:   #777;
+      --border:    #252525;
+      --bar:       #2a2a2a;
+      --header-bg: #0d0d0d;
+      --shadow:    0 4px 30px rgba(0,0,0,0.55);
+    }
+
+    /* ── RESET ───────────────────────────────────────────────────── */
+    *, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+    html, body {
+      height: 100%;
+      font-family: 'DM Sans', sans-serif;
+      background: var(--bg);
+      color: var(--text);
+      transition: background var(--transition), color var(--transition);
+    }
+
+    /* ── APP SHELL ───────────────────────────────────────────────── */
+    .app { display: flex; height: 100vh; overflow: hidden; }
+
+    /* ── SIDEBAR ─────────────────────────────────────────────────── */
+    .sidebar {
+      width: 220px; min-width: 220px;
+      background: var(--sidebar);
+      display: flex; flex-direction: column;
+      padding: 28px 18px;
+      transition: background var(--transition);
+      z-index: 10;
+    }
+
+    .logo { display: flex; align-items: center; gap: 10px; margin-bottom: 36px; }
+    .logo-icon {
+      width: 36px; height: 36px;
+      background: var(--green); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+    }
+    .logo-text { font-family: 'Syne', sans-serif; font-weight: 800; font-size: 1.1rem; color: #fff; }
+
+    .nav-group { margin-bottom: 28px; }
+    .nav-label {
+      font-size: 0.68rem; text-transform: uppercase;
+      letter-spacing: 0.12em; color: #444;
+      font-weight: 600; margin-bottom: 8px; padding-left: 10px;
+    }
+
+    .nav-item {
+      display: flex; align-items: center; gap: 10px;
+      padding: 9px 12px; border-radius: 10px;
+      cursor: pointer; color: #888;
+      font-size: 0.85rem; font-weight: 500;
+      transition: background 220ms ease, color 220ms ease;
+      margin-bottom: 2px;
+    }
+    .nav-item:hover { background: rgba(255,255,255,0.07); color: #fff; }
+    .nav-item.active { background: rgba(34,197,94,0.15); color: var(--green); }
+
+    .sidebar-footer { margin-top: auto; }
+    .user-card {
+      display: flex; align-items: center; gap: 10px;
+      padding: 10px 8px; border-radius: 12px;
+      background: rgba(255,255,255,0.05);
+    }
+    .user-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      object-fit: cover; border: 2px solid var(--green); flex-shrink: 0;
+    }
+    .user-name { font-size: 0.83rem; font-weight: 600; color: #fff; }
+    .user-email { font-size: 0.68rem; color: #555; }
+
+    /* ── MAIN ────────────────────────────────────────────────────── */
+    .main {
+      flex: 1; display: flex; flex-direction: column; overflow: hidden;
+      background: var(--bg); transition: background var(--transition);
+    }
+
+    /* ── HEADER ──────────────────────────────────────────────────── */
+    .header {
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 18px 26px;
+      border-bottom: 1px solid var(--border);
+      background: var(--header-bg);
+      transition: background var(--transition), border-color var(--transition);
+    }
+    .header h1 {
+      font-family: 'Syne', sans-serif; font-size: 1.55rem; font-weight: 800;
+      color: var(--text); transition: color var(--transition);
+    }
+
+    .header-actions { display: flex; align-items: center; gap: 8px; }
+
+    .icon-btn {
+      width: 38px; height: 38px; border-radius: 10px;
+      background: var(--surface); border: 1px solid var(--border);
+      display: flex; align-items: center; justify-content: center;
+      cursor: pointer; color: var(--text); font-size: 1.1rem;
+      transition: background var(--fast), border-color var(--fast),
+                  color var(--fast), transform 150ms ease;
+      position: relative; overflow: hidden;
+    }
+    .icon-btn:hover { background: var(--green); color: #fff; border-color: var(--green); transform: scale(1.06); }
+
+    /* theme toggle icon animation */
+    .theme-btn .icon-sun,
+    .theme-btn .icon-moon {
+      position: absolute;
+      transition: transform 500ms cubic-bezier(0.100,1.70,1.64,5), opacity 280ms ease;
+    }
+    [data-theme="light"] .icon-sun  { transform: translateY(0);    opacity: 1; }
+    [data-theme="light"] .icon-moon { transform: translateY(34px);  opacity: 0; }
+    [data-theme="dark"]  .icon-sun  { transform: translateY(-34px); opacity: 0; }
+    [data-theme="dark"]  .icon-moon { transform: translateY(0);    opacity: 1; }
+
+    /* ── CONTENT AREA ────────────────────────────────────────────── */
+    .content {
+      flex: 1; overflow-y: auto; padding: 22px 26px;
+      display: flex; gap: 18px;
+    }
+    .content-left { flex: 1; display: flex; flex-direction: column; gap: 18px; min-width: 0; }
+    .content-right { width: 255px; min-width: 255px; }
+
+    /* ── STAT CARDS ──────────────────────────────────────────────── */
+    .stat-cards { display: grid; grid-template-columns: repeat(3,1fr); gap: 14px; }
+
+    .stat-card {
+      background: var(--card); border-radius: 16px; padding: 20px 18px;
+      color: #fff; position: relative; overflow: hidden;
+      transition: background var(--transition), transform 200ms ease, box-shadow 200ms ease;
+      cursor: default;
+    }
+    .stat-card::before {
+      content: '';
+      position: absolute; top: -30px; right: -30px;
+      width: 90px; height: 90px;
+      border-radius: 50%;
+      background: rgba(34,197,94,0.07);
+      pointer-events: none;
+    }
+    .stat-card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(34,197,94,0.12); }
+
+    .stat-icon {
+      width: 40px; height: 40px; background: var(--green); border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 1.2rem; color: #fff; margin-bottom: 14px;
+    }
+    .stat-label { font-size: 0.78rem; color: #aaa; font-weight: 500; margin-bottom: 5px; }
+    .stat-value { font-family: 'Syne', sans-serif; font-size: 1.6rem; font-weight: 800; }
+
+    /* ── GENERIC CARD ────────────────────────────────────────────── */
+    .card {
+      background: var(--bg2); border-radius: 16px; padding: 22px 20px;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      transition: background var(--transition), border-color var(--transition), box-shadow var(--transition);
+    }
+    .card-title {
+      font-family: 'Syne', sans-serif; font-size: 1rem; font-weight: 700;
+      color: var(--text); margin-bottom: 18px; transition: color var(--transition);
+    }
+
+    /* ── BAR CHART ───────────────────────────────────────────────── */
+    .chart-wrap { display: flex; align-items: flex-end; gap: 7px; height: 120px; }
+    .bar-col { flex: 1; display: flex; flex-direction: column; align-items: center; gap: 6px; }
+
+    .bar {
+      width: 100%; border-radius: 6px 6px 0 0;
+      background: var(--bar);
+      position: relative; cursor: pointer;
+      transition: background 300ms ease, height 800ms cubic-bezier(0.34,1.56,0.64,1), transform 200ms ease;
+    }
+    .bar.active { background: var(--green); }
+    .bar:hover:not(.active) { background: #888; transform: scaleX(1.08); }
+    .bar.active:hover { background: var(--green-dark); }
+
+    .bar-tooltip {
+      position: absolute; top: -26px; left: 50%; transform: translateX(-50%);
+      background: var(--green); color: #fff;
+      font-size: 0.62rem; font-weight: 700;
+      padding: 3px 8px; border-radius: 6px; white-space: nowrap;
+      pointer-events: none; opacity: 0;
+      transition: opacity 200ms ease;
+    }
+    .bar.active .bar-tooltip { opacity: 1; }
+
+    .bar-month {
+      font-size: 0.66rem; color: var(--subtext);
+      font-weight: 500; transition: color var(--transition);
+    }
+    .bar-col.active-col .bar-month { color: var(--green); font-weight: 700; }
+
+    /* ── TRANSACTIONS ────────────────────────────────────────────── */
+    .tx-item {
+      display: flex; align-items: center; gap: 12px;
+      padding: 10px 0; border-bottom: 1px solid var(--border);
+      transition: border-color var(--transition);
+    }
+    .tx-item:last-child { border-bottom: none; }
+
+    .tx-avatar {
+      width: 38px; height: 38px; border-radius: 50%;
+      object-fit: cover; border: 2px solid var(--border); flex-shrink: 0;
+      transition: border-color var(--transition);
+    }
+    .tx-meta { flex: 1; min-width: 0; }
+    .tx-name { font-size: 0.82rem; font-weight: 600; color: var(--text); transition: color var(--transition); }
+    .tx-row { display: flex; gap: 8px; flex-wrap: wrap; align-items: center; margin-top: 3px; }
+    .tx-type { font-size: 0.71rem; color: var(--subtext); transition: color var(--transition); }
+    .tx-date { font-size: 0.71rem; color: var(--green); font-weight: 600; }
+    .tx-status { font-size: 0.75rem; font-weight: 700; color: var(--green); margin-left: auto; flex-shrink: 0; }
+    .tx-time { font-size: 0.71rem; color: var(--subtext); transition: color var(--transition); }
+
+    /* ── ACTIVITY PANEL ──────────────────────────────────────────── */
+    .activity-panel {
+      background: var(--bg2); border-radius: 16px; padding: 22px 18px;
+      border: 1px solid var(--border); box-shadow: var(--shadow);
+      height: 100%;
+      transition: background var(--transition), border-color var(--transition);
+    }
+
+    .bubble-wrap { position: relative; height: 195px; margin-bottom: 20px; }
+
+    .bubble {
+      position: absolute; border-radius: 50%;
+      display: flex; flex-direction: column; align-items: center; justify-content: center;
+      font-family: 'Syne', sans-serif; font-weight: 700;
+      transition: transform 280ms ease;
+      cursor: default;
+    }
+    .bubble:hover { transform: scale(1.07); }
+
+    .bubble-amount { font-size: 1rem; color: #fff; }
+    .bubble-label  { font-size: 0.63rem; color: rgba(255,255,255,0.75); font-family: 'DM Sans'; margin-top: 2px; }
+
+    .b-green { width: 120px; height: 120px; background: var(--green); top: 0; left: 14px;
+               animation: floatBubble 3.8s ease-in-out infinite; }
+    .b-gray  { width: 92px;  height: 92px;  background: #c5c5c5;    top: 65px; left: 105px;
+               animation: floatBubble 3.8s 1.2s ease-in-out infinite; }
+    .b-dark  { width: 84px;  height: 84px;  background: #151515;    top: 108px; left: 158px;
+               animation: floatBubble 3.8s 2.4s ease-in-out infinite; }
+
+    [data-theme="dark"] .b-gray { background: #3a3a3a; }
+    [data-theme="dark"] .b-gray .bubble-amount,
+    [data-theme="dark"] .b-gray .bubble-label  { color: #fff; }
+
+    [data-theme="light"] .b-gray .bubble-amount { color: #333; }
+    [data-theme="light"] .b-gray .bubble-label  { color: #555; }
+
+    @keyframes floatBubble {
+      0%, 100% { transform: translateY(0); }
+      50%       { transform: translateY(-7px); }
+    }
+
+    .compare-title {
+      font-family: 'Syne', sans-serif; font-size: 0.9rem; font-weight: 700;
+      color: var(--text); margin-bottom: 14px; transition: color var(--transition);
+    }
+    .compare-row { margin-bottom: 12px; }
+    .compare-label { font-size: 0.7rem; color: var(--subtext); margin-bottom: 5px; transition: color var(--transition); }
+    .compare-bar-track {
+      height: 10px; border-radius: 99px;
+      background: var(--surface); overflow: hidden; transition: background var(--transition);
+    }
+    .compare-bar-fill {
+      height: 100%; border-radius: 99px;
+      transition: width 900ms cubic-bezier(0.34,1.56,0.64,1);
+    }
+    .fill-green { background: var(--green); width: 0%; }
+    .fill-dark  { background: var(--text);  width: 0%; transition: background var(--transition), width 900ms cubic-bezier(0.34,1.56,0.64,1); }
+
+    /* ── THEME-SWITCH ANIMATION OVERLAY ──────────────────────────── */
+    .theme-flash {
+      position: fixed; inset: 0; z-index: 9999;
+      pointer-events: none; opacity: 0;
+      background: radial-gradient(circle at 96% 5%, var(--green) 0%, transparent 70%);
+    }
+    .theme-flash.flashing {
+      animation: doFlash 650ms ease forwards;
+    }
+    @keyframes doFlash {
+      0%   { opacity: 0; }
+      25%  { opacity: 0.2; }
+      100% { opacity: 0; }
+    }
+
+    /* ── ENTRY ANIMATIONS ────────────────────────────────────────── */
+    .fade-up {
+      opacity: 0; transform: translateY(16px);
+      animation: fadeUp 500ms ease forwards;
+    }
+    .fade-up:nth-child(1) { animation-delay: 0.05s; }
+    .fade-up:nth-child(2) { animation-delay: 0.12s; }
+    .fade-up:nth-child(3) { animation-delay: 0.19s; }
+    @keyframes fadeUp { to { opacity:1; transform:translateY(0); } }
+
+    .slide-right { opacity: 0; transform: translateX(22px); animation: slideRight 550ms 0.2s ease forwards; }
+    @keyframes slideRight { to { opacity:1; transform:translateX(0); } }
+
+    /* ── SCROLLBAR ───────────────────────────────────────────────── */
+    .content::-webkit-scrollbar { width: 5px; }
+    .content::-webkit-scrollbar-track { background: transparent; }
+    .content::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+  </style>
+</head>
+<body>
+
+<div class="theme-flash" id="themeFlash"></div>
+
+<div class="app">
+
+  <!-- ───────── SIDEBAR ───────── -->
+  <aside class="sidebar">
+    <div class="logo">
+      <div class="logo-icon">
+        <iconify-icon icon="ph:flame-fill" style="color:#fff;font-size:1.2rem;"></iconify-icon>
+      </div>
+      <span class="logo-text">Finance App</span>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Manage</div>
+      <div class="nav-item active">
+        <iconify-icon icon="ph:squares-four-fill"></iconify-icon> Dashboard
+      </div>
+      <div class="nav-item">
+        <iconify-icon icon="ph:chart-bar-fill"></iconify-icon> Analytics
+      </div>
+      <div class="nav-item">
+        <iconify-icon icon="ph:trend-up-fill"></iconify-icon> Performance
+      </div>
+      <div class="nav-item">
+        <iconify-icon icon="ph:bell-fill"></iconify-icon> Notification
+      </div>
+      <div class="nav-item">
+        <iconify-icon icon="ph:gear-six-fill"></iconify-icon> Settings
+      </div>
+    </div>
+
+    <div class="nav-group">
+      <div class="nav-label">Preferences</div>
+      <div class="nav-item">
+        <iconify-icon icon="ph:circle-half-fill"></iconify-icon> Theme
+      </div>
+      <div class="nav-item">
+        <iconify-icon icon="ph:shield-checkered-fill"></iconify-icon> Security
+      </div>
+    </div>
+
+    <div class="sidebar-footer">
+      <div class="user-card">
+        <img
+          class="user-avatar"
+          src="https://images.unsplash.com/photo-1438761681033-6461ffad8d80?w=80&h=80&fit=crop&crop=face"
+          alt="Hardiya"
+        />
+        <div>
+          <div class="user-name">Hardiya</div>
+          <div class="user-email">Hardiya@gmail.com</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- ───────── MAIN ───────── -->
+  <div class="main">
+
+    <!-- HEADER -->
+    <header class="header">
+      <h1>Dashboard</h1>
+      <div class="header-actions">
+        <button class="icon-btn theme-btn" id="themeToggle" title="Toggle theme" aria-label="Toggle theme">
+          <iconify-icon icon="ph:sun-fill"  class="icon-sun"></iconify-icon>
+          <iconify-icon icon="ph:moon-fill" class="icon-moon"></iconify-icon>
+        </button>
+        <button class="icon-btn" title="Search">
+          <iconify-icon icon="ph:magnifying-glass-bold"></iconify-icon>
+        </button>
+        <button class="icon-btn" title="Alerts">
+          <iconify-icon icon="ph:clock-countdown-fill"></iconify-icon>
+        </button>
+        <button class="icon-btn" title="More">
+          <iconify-icon icon="ph:dots-three-bold"></iconify-icon>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT -->
+    <div class="content">
+
+      <!-- LEFT -->
+      <div class="content-left">
+
+        <!-- STAT CARDS -->
+        <div class="stat-cards">
+          <div class="stat-card fade-up">
+            <div class="stat-icon"><iconify-icon icon="ph:wallet-fill"></iconify-icon></div>
+            <div class="stat-label">Total Balance</div>
+            <div class="stat-value">₹ 6000</div>
+          </div>
+          <div class="stat-card fade-up">
+            <div class="stat-icon"><iconify-icon icon="ph:hand-coins-fill"></iconify-icon></div>
+            <div class="stat-label">Total Spending</div>
+            <div class="stat-value">₹ 10000</div>
+          </div>
+          <div class="stat-card fade-up">
+            <div class="stat-icon"><iconify-icon icon="ph:piggy-bank-fill"></iconify-icon></div>
+            <div class="stat-label">Money Saved</div>
+            <div class="stat-value">₹ 2500</div>
+          </div>
+        </div>
+
+        <!-- OVERVIEW CHART -->
+        <div class="card">
+          <div class="card-title">Overview</div>
+          <div class="chart-wrap" id="chart"></div>
+        </div>
+
+        <!-- TRANSACTION HISTORY -->
+        <div class="card">
+          <div class="card-title">Transaction History</div>
+
+          <div class="tx-item">
+            <img class="tx-avatar"
+              src="https://images.unsplash.com/photo-1500648767791-00dcc994a43e?w=80&h=80&fit=crop&crop=face"
+              alt="Daniel Russell"/>
+            <div class="tx-meta">
+              <div class="tx-name">Daniel Russell</div>
+              <div class="tx-row">
+                <span class="tx-type">Online Payment</span>
+                <span class="tx-date">Sep 5 2026 · ₹200</span>
+                <span class="tx-type">Online Payment</span>
+              </div>
+            </div>
+            <span class="tx-status">Done</span>
+            <span class="tx-time" style="margin-left:10px;color:var(--subtext);font-size:0.7rem;">Sep 5 2026</span>
+          </div>
+
+          <div class="tx-item">
+            <img class="tx-avatar"
+              src="https://images.unsplash.com/photo-1494790108377-be9c29b29330?w=80&h=80&fit=crop&crop=face"
+              alt="Elange Russell"/>
+            <div class="tx-meta">
+              <div class="tx-name">Elange Russell</div>
+              <div class="tx-row">
+                <span class="tx-type">Online Payment</span>
+                <span class="tx-date">Sep 5 2026 · ₹600</span>
+                <span class="tx-type">Online Payment</span>
+              </div>
+            </div>
+            <span class="tx-status">Done</span>
+            <span class="tx-time" style="margin-left:10px;color:var(--subtext);font-size:0.7rem;">Sep 5 2026</span>
+          </div>
+
+          <div class="tx-item">
+            <img class="tx-avatar"
+              src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?w=80&h=80&fit=crop&crop=face"
+              alt="Eva Russell"/>
+            <div class="tx-meta">
+              <div class="tx-name">Eva Russell</div>
+              <div class="tx-row">
+                <span class="tx-type">Online Payment</span>
+                <span class="tx-date">Sep 5 2026 · ₹300</span>
+                <span class="tx-type">Online Payment</span>
+              </div>
+            </div>
+            <span class="tx-status">Done</span>
+            <span class="tx-time" style="margin-left:10px;color:var(--subtext);font-size:0.7rem;">Sep 5 2026</span>
+          </div>
+
+        </div>
+      </div><!-- /content-left -->
+
+      <!-- RIGHT -->
+      <div class="content-right slide-right">
+        <div class="activity-panel">
+
+          <div class="card-title">Activity</div>
+
+          <!-- Bubble chart -->
+          <div class="bubble-wrap">
+            <div class="bubble b-green">
+              <span class="bubble-amount">₹ 4000</span>
+              <span class="bubble-label">Online shop</span>
+            </div>
+            <div class="bubble b-gray">
+              <span class="bubble-amount">₹ 700</span>
+              <span class="bubble-label">Taxi</span>
+            </div>
+            <div class="bubble b-dark">
+              <span class="bubble-amount">₹ 2000</span>
+              <span class="bubble-label">Food</span>
+            </div>
+          </div>
+
+          <!-- Month comparison -->
+          <div class="compare-title">Comparison (Month)</div>
+
+          <div class="compare-row">
+            <div class="compare-label">This Month</div>
+            <div class="compare-bar-track">
+              <div class="compare-bar-fill fill-green" id="barGreen"></div>
+            </div>
+          </div>
+          <div class="compare-row">
+            <div class="compare-label">This Month</div>
+            <div class="compare-bar-track">
+              <div class="compare-bar-fill fill-dark" id="barDark"></div>
+            </div>
+          </div>
+
+        </div>
+      </div><!-- /content-right -->
+
+    </div><!-- /content -->
+  </div><!-- /main -->
+</div><!-- /app -->
+
+<script>
+/* ─── CHART ─────────────────────────────────────────────────────── */
+const MONTHS  = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec'];
+const HEIGHTS = [72, 42, 58, 62, 30, 55, 85, 65, 48, 70, 44, 52]; // percent of 110px
+const ACTIVE  = 8; // Sep
+
+function buildChart() {
+  const wrap = document.getElementById('chart');
+  wrap.innerHTML = '';
+  MONTHS.forEach((m, i) => {
+    const col = document.createElement('div');
+    col.className = 'bar-col' + (i === ACTIVE ? ' active-col' : '');
+
+    const bar = document.createElement('div');
+    bar.className = 'bar' + (i === ACTIVE ? ' active' : '');
+    bar.style.height = '0';
+    bar.style.maxHeight = '110px';
+
+    // tooltip only on active
+    const tip = document.createElement('div');
+    tip.className = 'bar-tooltip';
+    tip.textContent = i === ACTIVE ? 'From 500' : `₹${HEIGHTS[i] * 14}`;
+    bar.appendChild(tip);
+
+    // show tooltip on hover for all bars
+    bar.addEventListener('mouseenter', () => { tip.style.opacity = '1'; });
+    bar.addEventListener('mouseleave', () => { if (i !== ACTIVE) tip.style.opacity = '0'; });
+
+    const label = document.createElement('div');
+    label.className = 'bar-month';
+    label.textContent = m;
+
+    col.appendChild(bar);
+    col.appendChild(label);
+    wrap.appendChild(col);
+
+    // stagger height animation
+    setTimeout(() => {
+      bar.style.height = (HEIGHTS[i] / 100 * 110) + 'px';
+    }, 80 + i * 50);
+  });
+}
+
+/* ─── COMPARISON BARS ────────────────────────────────────────────── */
+function animateCompareBars() {
+  setTimeout(() => { document.getElementById('barGreen').style.width = '62%'; }, 400);
+  setTimeout(() => { document.getElementById('barDark').style.width  = '42%'; }, 550);
+}
+
+/* ─── THEME TOGGLE ───────────────────────────────────────────────── */
+const html  = document.documentElement;
+const flash = document.getElementById('themeFlash');
+
+document.getElementById('themeToggle').addEventListener('click', () => {
+  // trigger flash overlay
+  flash.classList.remove('flashing');
+  void flash.offsetWidth;           // force reflow
+  flash.classList.add('flashing');
+
+  // switch theme slightly after flash peak
+  setTimeout(() => {
+    html.dataset.theme = html.dataset.theme === 'light' ? 'dark' : 'light';
+  }, 130);
+});
+
+/* ─── INIT ────────────────────────────────────────────────────────── */
+buildChart();
+animateCompareBars();
+</script>
+</body>
+</html>
